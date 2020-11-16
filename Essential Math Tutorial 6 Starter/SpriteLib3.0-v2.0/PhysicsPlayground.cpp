@@ -1,6 +1,6 @@
 #include "PhysicsPlayground.h"
 #include "Utilities.h"
-
+using namespace std;
 #include <random>
 
 PhysicsPlayground::PhysicsPlayground(std::string name)
@@ -112,53 +112,28 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 	}
 
 	// Top platform
-	PhysicsPlayground::makeBox(1500, 10, 700, 50);
+	PhysicsPlayground::makeBox(1500, 10, 700, 50, false);
 	
 	// Bottom platform
-	PhysicsPlayground::makeBox(1500, 10, 700, -50);
-	
+	PhysicsPlayground::makeBox(350, 10, 100, -50, false);
+	PhysicsPlayground::makeBox(350, 10, 520, -50, false);
+
 	// Side 
-	PhysicsPlayground::makeBox(10, 100, -50, 0);
+	PhysicsPlayground::makeBox(10, 100, -50, 0, false);
 
-	// Test function
-	PhysicsPlayground::makeBox(20, 30, 30, 50);
+	// Second layer
+	PhysicsPlayground::makeBox(200, 10, 350, -110, false);
 
-	//Ball
-	{
-		auto entity = ECS::CreateEntity();
-		// Ball is the name of the entity
-		ball = entity;
-		//Add components
-		ECS::AttachComponent<Sprite>(entity);
-		ECS::AttachComponent<Transform>(entity);
-		ECS::AttachComponent<PhysicsBody>(entity);
+	// Second Side 
+	PhysicsPlayground::makeBox(10, 80, 350, -80, false);
 
-		//Sets up the components
-		std::string fileName = "BeachBall.png";
-		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 20, 20);
-		ECS::GetComponent<Sprite>(entity).SetTransparency(1.f);
-		ECS::GetComponent<Transform>(entity).SetPosition(vec3(45.f, -8.f, 3.f));
+	// Making a ball
+	PhysicsPlayground::makeBall(20, 20, 20, -8);
 
-		auto& tempSpr = ECS::GetComponent<Sprite>(entity);
-		auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
+	// Making a moveable box
+	PhysicsPlayground::makeBox(60, 60, 80, -8, true);
 
-		float shrinkX = 0.f;
-		float shrinkY = 0.f;
-
-		b2Body* tempBody;
-		b2BodyDef tempDef;
-		tempDef.type = b2_dynamicBody;
-		tempDef.position.Set(float32(45.f), float32(-8.f));
-
-		tempBody = m_physicsWorld->CreateBody(&tempDef);
-
-		//tempPhsBody = PhysicsBody(tempBody, float(tempSpr.GetWidth() - shrinkX), float(tempSpr.GetHeight() - shrinkY), vec2(0.f, 0.f), false);
-		tempPhsBody = PhysicsBody(entity, tempBody, float((tempSpr.GetWidth() - shrinkY) / 2.f), vec2(0.f, 0.f), false, OBJECTS, GROUND | ENVIRONMENT | PLAYER | TRIGGER, 10000000000.f);
-
-		tempPhsBody.SetColor(vec4(1.f, 0.f, 1.f, 0.3f));
-	}
-
-	//Setup trigger
+	// Setup trigger
 	{
 		//Creates entity
 		auto entity = ECS::CreateEntity();
@@ -174,11 +149,11 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 50, 50);
 		ECS::GetComponent<Transform>(entity).SetPosition(vec3(30.f, -20.f, 80.f));
 		ECS::GetComponent<Trigger*>(entity) = new DestroyTrigger();
-		// 
+		
 		ECS::GetComponent<Trigger*>(entity)->SetTriggerEntity(entity);
 		// This line affect the ball and making it disappear
 		ECS::GetComponent<Trigger*>(entity)->AddTargetEntity(ball);
-		// ECS::GetComponent<Trigger*>(entity)->AddTargetEntity();
+		// ECS::GetComponent<Trigger*>(entity)->AddTargetEntity(wall);
 
 		auto& tempSpr = ECS::GetComponent<Sprite>(entity);
 		auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
@@ -188,7 +163,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		b2Body* tempBody;
 		b2BodyDef tempDef;
 		tempDef.type = b2_staticBody;
-		tempDef.position.Set(float32(200.f), float32(0.f));
+		tempDef.position.Set(float32(520.f), float32(0.f));
 
 		tempBody = m_physicsWorld->CreateBody(&tempDef);
 
@@ -200,7 +175,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 	ECS::GetComponent<VerticalScroll>(MainEntities::MainCamera()).SetFocus(&ECS::GetComponent<Transform>(MainEntities::MainPlayer()));
 }
 
-void PhysicsPlayground::makeBox(int xSize, int ySize, float xPos, float yPos)
+void PhysicsPlayground::makeBox(int xSize, int ySize, float xPos, float yPos, float moveable)
 {
 	//Creates entity
 	auto entity = ECS::CreateEntity();
@@ -222,14 +197,60 @@ void PhysicsPlayground::makeBox(int xSize, int ySize, float xPos, float yPos)
 	float shrinkY = 0.f;
 	b2Body* tempBody;
 	b2BodyDef tempDef;
-	tempDef.type = b2_staticBody;
+	if (moveable == false) {
+		tempDef.type = b2_staticBody;
+	}
+	else {
+		tempDef.type = b2_dynamicBody;
+	}
 	tempDef.position.Set(float32(xPos), float32(yPos));
 
 	tempBody = m_physicsWorld->CreateBody(&tempDef);
 
 	tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth() - shrinkX),
-		float(tempSpr.GetHeight() - shrinkY), vec2(0.f, 0.f), false, GROUND, PLAYER | ENEMY);
+		float(tempSpr.GetHeight() - shrinkY), vec2(0.f, 0.f), false, GROUND, PLAYER | ENEMY | TRIGGER);
 	tempPhsBody.SetColor(vec4(0.f, 1.f, 0.f, 0.3f));
+}
+
+void PhysicsPlayground::makeBall(int xSize, int ySize, float xPos, float yPos)
+{
+	auto entity = ECS::CreateEntity();
+	// Ball is the name of the entity
+	ball = entity;
+
+	//Add components
+	ECS::AttachComponent<Sprite>(entity);
+	ECS::AttachComponent<Transform>(entity);
+	ECS::AttachComponent<PhysicsBody>(entity);
+
+	//Sets up the components
+	std::string fileName = "BeachBall.png";
+	ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, xSize, ySize);
+	ECS::GetComponent<Sprite>(entity).SetTransparency(1.f);
+	ECS::GetComponent<Transform>(entity).SetPosition(vec3(45.f, -8.f, 3.f));
+
+	auto& tempSpr = ECS::GetComponent<Sprite>(entity);
+	auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
+
+	float shrinkX = 0.f;
+	float shrinkY = 0.f;
+
+	b2Body* tempBody;
+	b2BodyDef tempDef;
+	tempDef.type = b2_dynamicBody;
+	tempDef.position.Set(float32(xPos), float32(yPos));
+
+	tempBody = m_physicsWorld->CreateBody(&tempDef);
+
+	//tempPhsBody = PhysicsBody(tempBody, float(tempSpr.GetWidth() - shrinkX), float(tempSpr.GetHeight() - shrinkY), vec2(0.f, 0.f), false);
+	tempPhsBody = PhysicsBody(entity, tempBody, float((tempSpr.GetWidth() - shrinkY) / 2.f), vec2(0.f, 0.f), false, OBJECTS, GROUND | ENVIRONMENT | PLAYER | TRIGGER, 0.5f, 10.f);
+
+	//Custom body
+	// The program detects these points clockwise, so top of the triangle, bottom right, bottom left. box 2d is counter clockwise
+	// std::vector<b2Vec2> points = { b2Vec2(-tempSpr.GetWidth() / 2, -tempSpr.GetHeight() / 2.f), b2Vec2(tempSpr.GetWidth() / 2.f,-tempSpr.GetHeight() / 2), b2Vec2(0.f,tempSpr.GetHeight() / 2.f) }; 
+	// tempPhsBody = PhysicsBody(entity, BodyType::TRIANGLE, tempBody, points, vec2(0.f, 0.f), false, PLAYER, ENEMY | OBJECTS | PICKUP | TRIGGER, 0.5f, 3.f);
+
+	tempPhsBody.SetColor(vec4(1.f, 0.f, 1.f, 0.3f));
 }
 
 void PhysicsPlayground::Update()
