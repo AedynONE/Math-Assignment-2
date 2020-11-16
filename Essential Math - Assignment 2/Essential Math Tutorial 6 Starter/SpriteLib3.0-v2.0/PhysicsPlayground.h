@@ -12,6 +12,8 @@ public:
 
 	void Update() override;
 
+	void makeBox(int xSize, int ySize, float xPos, float yPos);
+
 	//Input overrides
 	void KeyboardHold() override;
 	void KeyboardDown() override;
