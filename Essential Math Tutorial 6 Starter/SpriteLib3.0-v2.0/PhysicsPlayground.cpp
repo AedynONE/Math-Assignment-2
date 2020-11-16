@@ -100,7 +100,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		//Square body
 		//tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth() - shrinkX), float(tempSpr.GetHeight() - shrinkY), vec2(0.f, 0.f), false, PLAYER, ENEMY | OBJECTS | PICKUP | TRIGGER, 0.5f, 3.f);
 		//Sphere body
-		tempPhsBody = PhysicsBody(entity, tempBody, float((tempSpr.GetHeight() - shrinkY)/2.f), vec2(0.f, 0.f), false, PLAYER, ENEMY | OBJECTS | PICKUP | TRIGGER, 0.5f, 3.f);
+		tempPhsBody = PhysicsBody(entity, tempBody, float((tempSpr.GetHeight() - shrinkY)/2.f), vec2(0.f, 0.f), false, PLAYER, ENEMY | OBJECTS | PICKUP | TRIGGER, 1.f, 3.f);
 		//Custom body
 		// The program detects these points clockwise, so top of the triangle, bottom right, bottom left. box 2d is counter clockwise
 		// std::vector<b2Vec2> points = { b2Vec2(-tempSpr.GetWidth() / 2, -tempSpr.GetHeight() / 2.f), b2Vec2(tempSpr.GetWidth() / 2.f,-tempSpr.GetHeight() / 2), b2Vec2(0.f,tempSpr.GetHeight() / 2.f) }; 
@@ -126,6 +126,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 	//Ball
 	{
 		auto entity = ECS::CreateEntity();
+		// Ball is the name of the entity
 		ball = entity;
 		//Add components
 		ECS::AttachComponent<Sprite>(entity);
@@ -173,8 +174,11 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 50, 50);
 		ECS::GetComponent<Transform>(entity).SetPosition(vec3(30.f, -20.f, 80.f));
 		ECS::GetComponent<Trigger*>(entity) = new DestroyTrigger();
+		// 
 		ECS::GetComponent<Trigger*>(entity)->SetTriggerEntity(entity);
+		// This line affect the ball and making it disappear
 		ECS::GetComponent<Trigger*>(entity)->AddTargetEntity(ball);
+		// ECS::GetComponent<Trigger*>(entity)->AddTargetEntity();
 
 		auto& tempSpr = ECS::GetComponent<Sprite>(entity);
 		auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
@@ -184,7 +188,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		b2Body* tempBody;
 		b2BodyDef tempDef;
 		tempDef.type = b2_staticBody;
-		tempDef.position.Set(float32(-200.f), float32(0.f));
+		tempDef.position.Set(float32(200.f), float32(0.f));
 
 		tempBody = m_physicsWorld->CreateBody(&tempDef);
 
