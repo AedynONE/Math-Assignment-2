@@ -3,62 +3,35 @@
 
 #include "BackEnd.h"
 
-#define TOPDOWN
+//#define TOPDOWN
 
 enum AnimEnums
 {
 	IDLELEFT,
 	IDLERIGHT,
-	
-	//Only in Top down
-#ifdef TOPDOWN
 	IDLEUP,
 	IDLEDOWN,
-#endif
 
-	WALKLEFT,
-	WALKRIGHT,
-
-	//Only in Top down
-#ifdef TOPDOWN
-	WALKUP,
-	WALKDOWN,
-#endif
-	
-	ATTACKLEFT,
-	ATTACKRIGHT,
-
-	//Only in Top down
-#ifdef TOPDOWN
-	ATTACKUP,
-	ATTACKDOWN
-#endif
+	MOVELEFT,
+	MOVERIGHT,
+	MOVEUP,
+	MOVEDOWN
 };
 
 enum AnimTypes
 {
-#ifdef TOPDOWN
 	IDLE = 0,
-	WALK = 4,
-	ATTACK = 8
-#endif
-#ifndef TOPDOWN
-	IDLE = 0,
-	WALK = 2,
-	ATTACK = 4
-#endif
+	MOVE = 4,
 };
 
 enum AnimDir
 {
 	LEFT,
 	RIGHT,
-	//Only in Top Down
-#ifdef TOPDOWN
 	UP,
 	DOWN
-#endif
 };
+
 
 class Player
 {
@@ -73,14 +46,15 @@ public:
 	void Update();
 	void MovementUpdate();
 	void AnimationUpdate();
+	/*void SetSprite(Sprite* SprtCom) {
+		m_sprite = SprtCom;
+	}*/
 
 private:
 	void SetActiveAnimation(int anim);
 
 	//Basically, any animation OTHER than moving will not have a cancel, and we'll be checking whether or not that animation is done
 	bool m_moving = false;
-	//Are you currently attacking?????
-	bool m_attacking = false;
 	//Have we locked the player from moving during this animation?
 	bool m_locked = false;
 
@@ -95,10 +69,10 @@ private:
 	//A reference to our physics body
 	PhysicsBody* m_physBody = nullptr;
 	//Does this player have physics?
-	bool m_hasPhysics = false;
+	bool m_hasPhysics = true;
 
 	//Default animation direction (feel free to change this to suit your game. If you're making a side-scroller, left or right would be better
-	AnimDir m_facing = LEFT;
+	AnimDir m_facing = RIGHT;
 };
 
 #endif // !__PLAYER_H__

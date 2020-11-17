@@ -95,6 +95,7 @@ void Camera::Update()
 	Transform::Update();
 	//The view matrix is the inverse of the model matrix for a camera
 	m_viewMatrix = mat4::FastInverse(m_localToWorldMatrix);
+	//std::cout << GetWindowSize().x << ", " << GetWindowSize().y << "\n";
 }
 
 

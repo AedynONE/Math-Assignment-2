@@ -8,7 +8,7 @@ class PhysicsPlayground : public Scene
 public:
 	PhysicsPlayground(std::string name);
 
-	void InitScene(float windowWidth, float windowHeight) override;
+	void InitScene(float windowWidth = 1920, float windowHeight = 1080) override;
 
 	void Update() override;
 
