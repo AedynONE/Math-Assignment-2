@@ -60,9 +60,9 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		ECS::AttachComponent<Transform>(entity);
 
 		//Set up the components
-		std::string fileName = "HelloWorld.png";
-		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 100, 60);
-		ECS::GetComponent<Sprite>(entity).SetTransparency(0.5f);
+		std::string fileName = "black.png";
+		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 6000, 6000);
+		ECS::GetComponent<Sprite>(entity).SetTransparency(1.f);
 		ECS::GetComponent<Transform>(entity).SetPosition(vec3(0.f, 0.f, 0.f));
 	}
 	
@@ -106,11 +106,11 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		//Square body
 		tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth() - shrinkX), float(tempSpr.GetHeight() - shrinkY), vec2(0.f, 0.f), false, PLAYER, ENEMY | OBJECTS | PICKUP | TRIGGER, 0.5f, 20.f);
 		//Sphere body
-			//tempPhsBody = PhysicsBody(entity, tempBody, float((tempSpr.GetHeight() - shrinkY)/2.f), vec2(0.f, 0.f), false, PLAYER, ENEMY | OBJECTS | PICKUP | TRIGGER, 1.f, 3.f);
+			//tempPhsBody = PhysicsBody(entity, tempBody, float((tempSpr.GetHeight() - shrinkY)/2.f), vec2(0.f, 0.f), false, PLAYER, ENEMY | OBJECTS | PICKUP | TRIGGER, 0.5f, 20.f);
 		//Custom body
 		// The program detects these points clockwise, so top of the triangle, bottom right, bottom left. box 2d is counter clockwise
-		// std::vector<b2Vec2> points = { b2Vec2(-tempSpr.GetWidth() / 2, -tempSpr.GetHeight() / 2.f), b2Vec2(tempSpr.GetWidth() / 2.f,-tempSpr.GetHeight() / 2), b2Vec2(0.f,tempSpr.GetHeight() / 2.f) }; 
-		// tempPhsBody = PhysicsBody(entity, BodyType::TRIANGLE, tempBody, points, vec2(0.f, 0.f), false, PLAYER, ENEMY | OBJECTS | PICKUP | TRIGGER, 0.5f, 3.f);
+		 //std::vector<b2Vec2> points = { b2Vec2(-tempSpr.GetWidth() / 2, -tempSpr.GetHeight() / 2.f), b2Vec2(tempSpr.GetWidth() / 2.f,-tempSpr.GetHeight() / 2), b2Vec2(0.f,tempSpr.GetHeight() / 2.f) }; 
+		// tempPhsBody = PhysicsBody(entity, BodyType::TRIANGLE, tempBody, points, vec2(0.f, 0.f), false, PLAYER, ENEMY | OBJECTS | PICKUP | TRIGGER, 0.5f, 20.f);
 		tempPhsBody.SetRotationAngleDeg(0.f);
 		tempPhsBody.SetFixedRotation(true);
 		tempPhsBody.SetColor(vec4(1.f, 0.f, 1.f, 0.3f));
@@ -147,7 +147,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 	PhysicsPlayground::makeBox(10, 80, 350, -80, false, 0);
 
 	// Making a ball
-	PhysicsPlayground::makeBall(20, 20, 20, -8);
+	PhysicsPlayground::makeBall(32, 32, 20, -8);
 
 	// Moveable box
 	PhysicsPlayground::makeBox(60, 60, 80, -8, true, 0);
