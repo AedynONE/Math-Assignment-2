@@ -117,45 +117,44 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		tempPhsBody.SetGravityScale(0.f);
 	}
 
-	// Top platform
-	PhysicsPlayground::makeBox(1500, 10, 700, 50, false);
-	
-	// Bottom platform
-	PhysicsPlayground::makeBox(350, 10, 100, -50, false);
-	PhysicsPlayground::makeBox(350, 10, 520, -50, false);
+	// Ceiling
+	PhysicsPlayground::makeBox(750, 10, 300, 50, false, 0);
+	PhysicsPlayground::makeBox(250, 10, 800, 150, false, 0);
 
-	// Side 
-	PhysicsPlayground::makeBox(10, 100, -50, 0, false);
+	// Floor
+	PhysicsPlayground::makeBox(350, 10, 100, -50, false, 0);
+	PhysicsPlayground::makeBox(350, 10, 520, -50, false, 0);
+	PhysicsPlayground::makeBox(100, 10, 780, 100, false, 0);
+	PhysicsPlayground::makeBox(250, 10, 850, -80, false, 0);
+	PhysicsPlayground::makeBox(90, 10, 875, -40, false, 0);
+
+	// Puzzle 2 barrier blocks
+	PhysicsPlayground::makeBox(40, 10, 780, -40, false, 0);
+
+	// Walls
+	PhysicsPlayground::makeBox(10, 100, -50, 0, false, 0);
+	PhysicsPlayground::makeBox(10, 100, 680, 95, false, 0);
+	PhysicsPlayground::makeBox(10, 60, 730, 75, false, 0);
+	PhysicsPlayground::makeBox(10, 20, 700, -45, false, 0);
+	PhysicsPlayground::makeBox(10, 60, 830, 75, false, 0);
+	PhysicsPlayground::makeBox(10, 100, 920, 95, false, 0);
+	PhysicsPlayground::makeBox(10, 100, 920, 30, false, 0);
 
 	// Second layer
-	PhysicsPlayground::makeBox(200, 10, 350, -110, false);
+	PhysicsPlayground::makeBox(200, 10, 350, -110, false, 0);
 
-	// Second Side 
-	PhysicsPlayground::makeBox(10, 80, 350, -80, false);
+	// Bottom wall
+	PhysicsPlayground::makeBox(10, 80, 350, -80, false, 0);
 
 	// Making a ball
 	PhysicsPlayground::makeBall(20, 20, 20, -8);
 
-	// Making a moveable box
-	PhysicsPlayground::makeBox(60, 60, 80, -8, true);
+	// Moveable box
+	PhysicsPlayground::makeBox(60, 60, 80, -8, true, 0);
+	PhysicsPlayground::makeBox(20, 39, 780, 130, true, 0);
 
-		float shrinkX = 0.f;
-		float shrinkY = 0.f;
-
-		b2Body* tempBody;
-		b2BodyDef tempDef;
-		tempDef.type = b2_dynamicBody;
-		tempDef.position.Set(float32(45.f), float32(-8.f));
-
-		tempBody = m_physicsWorld->CreateBody(&tempDef);
-
-		//tempPhsBody = PhysicsBody(tempBody, float(tempSpr.GetWidth() - shrinkX), float(tempSpr.GetHeight() - shrinkY), vec2(0.f, 0.f), false);
-		tempPhsBody = PhysicsBody(entity, tempBody, float((tempSpr.GetWidth() - shrinkY) / 2.f), vec2(0.f, 0.f), false, OBJECTS, GROUND | ENVIRONMENT | PLAYER | TRIGGER, 1.f, 0.1f);
-
-		tempPhsBody.SetColor(vec4(1.f, 0.f, 1.f, 0.3f));
-	}
-
-	/*//Setup trigger
+	/*
+	//Setup trigger
 	{
 		//Creates entity
 		auto entity = ECS::CreateEntity();
@@ -191,7 +190,42 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 
 		tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth() - shrinkX), float(tempSpr.GetHeight() - shrinkY), vec2(0.f, 0.f), true, TRIGGER, PLAYER | OBJECTS);
 		tempPhsBody.SetColor(vec4(1.f, 0.f, 0.f, 0.3f));
-	}*/
+	}
+	*/
+
+	// Test Polygon
+
+	{
+		//Creates entity
+		auto entity = ECS::CreateEntity();
+
+		//Add components
+		ECS::AttachComponent<Sprite>(entity);
+		ECS::AttachComponent<Transform>(entity);
+		ECS::AttachComponent<PhysicsBody>(entity);
+
+		//Sets up components
+		std::string fileName = "BulletMask.jpg";
+		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 50, 39);
+		ECS::GetComponent<Transform>(entity).SetPosition(vec3(780, 125, 2.f));
+
+		auto& tempSpr = ECS::GetComponent<Sprite>(entity);
+		auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
+
+		float shrinkX = 0.f;
+		float shrinkY = 0.f;
+		b2Body* tempBody;
+		b2BodyDef tempDef;
+		tempDef.type = b2_dynamicBody;
+		tempDef.position.Set(float32(780), float32(125));
+
+		tempBody = m_physicsWorld->CreateBody(&tempDef);
+
+		tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth() - shrinkX),
+			float(tempSpr.GetHeight() - shrinkY), vec2(0.f, 0.f), false, GROUND, PLAYER | ENEMY | OBJECTS, 1.f, 1.f);
+		tempPhsBody.SetColor(vec4(0.f, 1.f, 0.f, 0.3f));
+		tempPhsBody.SetRotationAngleDeg(0);
+	}
 
 	ECS::GetComponent<HorizontalScroll>(MainEntities::MainCamera()).SetFocus(&ECS::GetComponent<Transform>(MainEntities::MainPlayer()));
 	ECS::GetComponent<VerticalScroll>(MainEntities::MainCamera()).SetFocus(&ECS::GetComponent<Transform>(MainEntities::MainPlayer()));
@@ -199,7 +233,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 	//ECS::GetComponent<Player>(MainEntities::MainPlayer()).SetSprite(&ECS::GetComponent<Sprite>(MainEntities::MainPlayer()));
 }
 
-void PhysicsPlayground::makeBox(int xSize, int ySize, float xPos, float yPos, float moveable)
+void PhysicsPlayground::makeBox(int xSize, int ySize, float xPos, float yPos, float moveable, float rotation)
 {
 	//Creates entity
 	auto entity = ECS::CreateEntity();
@@ -234,6 +268,7 @@ void PhysicsPlayground::makeBox(int xSize, int ySize, float xPos, float yPos, fl
 	tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth() - shrinkX),
 		float(tempSpr.GetHeight() - shrinkY), vec2(0.f, 0.f), false, GROUND, PLAYER | ENEMY | OBJECTS, 1.f, 1.f);
 	tempPhsBody.SetColor(vec4(0.f, 1.f, 0.f, 0.3f));
+	tempPhsBody.SetRotationAngleDeg(rotation);
 }
 
 void PhysicsPlayground::makeBall(int xSize, int ySize, float xPos, float yPos)
@@ -248,7 +283,7 @@ void PhysicsPlayground::makeBall(int xSize, int ySize, float xPos, float yPos)
 	ECS::AttachComponent<PhysicsBody>(entity);
 
 	//Sets up the components
-	std::string fileName = "BeachBall.png";
+	std::string fileName = "Ball.png";
 	ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, xSize, ySize);
 	ECS::GetComponent<Sprite>(entity).SetTransparency(1.f);
 	ECS::GetComponent<Transform>(entity).SetPosition(vec3(45.f, -8.f, 3.f));

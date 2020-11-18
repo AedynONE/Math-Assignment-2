@@ -12,7 +12,7 @@ public:
 
 	void Update() override;
 
-	void makeBox(int xSize, int ySize, float xPos, float yPos, float moveable);
+	void makeBox(int xSize, int ySize, float xPos, float yPos, float moveable, float rotation);
 	void makeBall(int xSize, int ySize, float xPos, float yPos);
 	//Input overrides
 	void KeyboardHold() override;
