@@ -99,7 +99,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		b2Body* tempBody;
 		b2BodyDef tempDef;
 		tempDef.type = b2_dynamicBody;
-		tempDef.position.Set(float32(0.f), float32(30.f));
+		tempDef.position.Set(float32(750.f), float32(30.f));
 
 		tempBody = m_physicsWorld->CreateBody(&tempDef);
 
@@ -125,7 +125,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 	PhysicsPlayground::makeBox(350, 10, 100, -50, false, 0);
 	PhysicsPlayground::makeBox(350, 10, 520, -50, false, 0);
 	PhysicsPlayground::makeBox(100, 10, 780, 100, false, 0);
-	PhysicsPlayground::makeBox(250, 10, 850, -80, false, 0);
+	PhysicsPlayground::makeBox(250, 10, 800, -80, false, 0);
 	PhysicsPlayground::makeBox(90, 10, 875, -40, false, 0);
 
 	// Puzzle 2 barrier blocks
@@ -148,12 +148,13 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 
 	// Making a ball
 	PhysicsPlayground::makeBall(32, 32, 20, -8);
+	PhysicsPlayground::makeBall(32, 32, 700, -8);
 
 	// Moveable box
 	PhysicsPlayground::makeBox(60, 60, 80, -8, true, 0);
 	PhysicsPlayground::makeBox(20, 39, 780, 130, true, 0);
 
-	/*
+	
 	//Setup trigger
 	{
 		//Creates entity
@@ -167,8 +168,8 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		
 		//Sets up components
 		std::string fileName = "boxSprite.jpg";
-		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 50, 50);
-		ECS::GetComponent<Transform>(entity).SetPosition(vec3(30.f, -20.f, 80.f));
+		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 200, 30);
+		ECS::GetComponent<Transform>(entity).SetPosition(vec3(800, -80.f, 80.f));
 		ECS::GetComponent<Trigger*>(entity) = new DestroyTrigger();
 		
 		ECS::GetComponent<Trigger*>(entity)->SetTriggerEntity(entity);
@@ -184,14 +185,14 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		b2Body* tempBody;
 		b2BodyDef tempDef;
 		tempDef.type = b2_staticBody;
-		tempDef.position.Set(float32(520.f), float32(0.f));
+		tempDef.position.Set(float32(800.f), float32(-80.f));
 
 		tempBody = m_physicsWorld->CreateBody(&tempDef);
 
-		tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth() - shrinkX), float(tempSpr.GetHeight() - shrinkY), vec2(0.f, 0.f), true, TRIGGER, PLAYER | OBJECTS);
+		tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth() - shrinkX), float(tempSpr.GetHeight() - shrinkY), vec2(0.f, 0.f), true, TRIGGER, OBJECTS);
 		tempPhsBody.SetColor(vec4(1.f, 0.f, 0.f, 0.3f));
 	}
-	*/
+	
 
 	// Test Polygon
 
