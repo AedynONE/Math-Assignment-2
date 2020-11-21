@@ -22,8 +22,6 @@ public:
 
 protected:
 	PhysicsPlaygroundListener listener;
-	int trigger = 0;
-	int ball = 0;
 	int wall = 0;
-	int block = 0;
+	int endWall = 1;
 };
