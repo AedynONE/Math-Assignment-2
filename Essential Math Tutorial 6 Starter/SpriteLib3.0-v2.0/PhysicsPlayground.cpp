@@ -117,28 +117,66 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		tempPhsBody.SetGravityScale(0.f);
 	}
 
+	// Drop Ailens 
+	{
+		//Creates entity
+		auto entity = ECS::CreateEntity();
+		wall = entity;
+
+		//Add components
+		ECS::AttachComponent<Sprite>(entity);
+		ECS::AttachComponent<Transform>(entity);
+		ECS::AttachComponent<PhysicsBody>(entity);
+
+		//Sets up components
+		std::string fileName = "boxSprite.jpg";
+		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 150, 20);
+		ECS::GetComponent<Transform>(entity).SetPosition(vec3(1295, 150, 2.f));
+
+		auto& tempSpr = ECS::GetComponent<Sprite>(entity);
+		auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
+
+		float shrinkX = 0.f;
+		float shrinkY = 0.f;
+		b2Body* tempBody;
+		b2BodyDef tempDef;
+		tempDef.type = b2_staticBody;
+		tempDef.position.Set(float32(1295), float32(150));
+
+		tempBody = m_physicsWorld->CreateBody(&tempDef);
+
+		tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth() - shrinkX),
+			float(tempSpr.GetHeight() - shrinkY), vec2(0.f, 0.f), false, GROUND, PLAYER | ENEMY | OBJECTS, 1.f, 1.f);
+		tempPhsBody.SetColor(vec4(0.f, 1.f, 0.f, 0.3f));
+		tempPhsBody.SetRotationAngleDeg(0);
+	}
+
 	// Ceiling
 	PhysicsPlayground::makeBox(750, 10, 300, 50, false, 0);
 	PhysicsPlayground::makeBox(250, 10, 800, 150, false, 0);
+	PhysicsPlayground::makeBox(300, 10, 1070, 50, false, 0);
 
 	// Floor
 	PhysicsPlayground::makeBox(350, 10, 100, -50, false, 0);
 	PhysicsPlayground::makeBox(350, 10, 520, -50, false, 0);
 	PhysicsPlayground::makeBox(100, 10, 780, 100, false, 0);
 	PhysicsPlayground::makeBox(250, 10, 800, -80, false, 0);
-	PhysicsPlayground::makeBox(90, 10, 875, -40, false, 0);
+	PhysicsPlayground::makeBox(500, 10, 1085, -40, false, 0);
+	PhysicsPlayground::makeBox(500, 10, 1200, -40, false, 0);
 
 	// Puzzle 2 barrier blocks
-	PhysicsPlayground::makeBox(40, 10, 780, -40, false, 0);
+	PhysicsPlayground::makeBox(45, 10, 790, -40, false, 0);
 
 	// Walls
 	PhysicsPlayground::makeBox(10, 100, -50, 0, false, 0);
 	PhysicsPlayground::makeBox(10, 100, 680, 95, false, 0);
 	PhysicsPlayground::makeBox(10, 60, 730, 75, false, 0);
-	PhysicsPlayground::makeBox(10, 20, 700, -45, false, 0);
+
 	PhysicsPlayground::makeBox(10, 60, 830, 75, false, 0);
 	PhysicsPlayground::makeBox(10, 100, 920, 95, false, 0);
-	PhysicsPlayground::makeBox(10, 100, 920, 30, false, 0);
+	PhysicsPlayground::makeBox(10, 25, 700, -45, false, 0);
+	PhysicsPlayground::makeBox(10, 200, 1215, 150, false, 0);
+	PhysicsPlayground::makeBox(10, 200, 1365, 150, false, 0);
 
 	// Second layer
 	PhysicsPlayground::makeBox(200, 10, 350, -110, false, 0);
@@ -148,14 +186,36 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 
 	// Making a ball
 	PhysicsPlayground::makeBall(32, 32, 20, -8);
-	PhysicsPlayground::makeBall(32, 32, 700, -8);
+	PhysicsPlayground::makeBall(32, 32, 650, -8);
+
+	// Making Polygons
+	PhysicsPlayground::makeTriangle(30, 30, 1240, 200);
+	PhysicsPlayground::makeTriangle(30, 30, 1240, 215);
+	PhysicsPlayground::makeTriangle(30, 30, 1240, 230);
+	PhysicsPlayground::makeTriangle(30, 30, 1240, 200);
+	PhysicsPlayground::makeTriangle(30, 30, 1270, 200);
+	PhysicsPlayground::makeTriangle(30, 30, 1270, 200);
+	PhysicsPlayground::makeTriangle(30, 30, 1270, 200);
+	PhysicsPlayground::makeTriangle(30, 30, 1270, 200);
+	PhysicsPlayground::makeTriangle(30, 30, 1240, 200);
+	PhysicsPlayground::makeTriangle(30, 30, 1240, 200);
+	PhysicsPlayground::makeTriangle(30, 30, 1240, 200);
+	PhysicsPlayground::makeTriangle(30, 30, 1240, 200);
+	PhysicsPlayground::makeTriangle(30, 30, 1240, 200);
+	PhysicsPlayground::makeTriangle(30, 30, 1270, 200);
+	PhysicsPlayground::makeTriangle(30, 30, 1270, 200);
+	PhysicsPlayground::makeTriangle(30, 30, 1270, 200);
+	PhysicsPlayground::makeTriangle(30, 30, 1270, 200);
+	PhysicsPlayground::makeTriangle(30, 30, 1270, 200);
+	PhysicsPlayground::makeTriangle(30, 30, 1240, 200);
+	PhysicsPlayground::makeTriangle(30, 30, 1240, 200);
 
 	// Moveable box
 	PhysicsPlayground::makeBox(60, 60, 80, -8, true, 0);
-	PhysicsPlayground::makeBox(20, 39, 780, 130, true, 0);
-
+	PhysicsPlayground::makeBox(20, 39, 800, 130, true, 0);
+	PhysicsPlayground::makeBox(59, 39, 850, 130, true, 0);
 	
-	//Setup trigger
+	// Destory ball blocker trigger
 	{
 		//Creates entity
 		auto entity = ECS::CreateEntity();
@@ -168,14 +228,14 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		
 		//Sets up components
 		std::string fileName = "boxSprite.jpg";
-		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 200, 30);
-		ECS::GetComponent<Transform>(entity).SetPosition(vec3(800, -80.f, 80.f));
+		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 20, 30);
+		ECS::GetComponent<Transform>(entity).SetPosition(vec3(730, -80.f, 80.f));
 		ECS::GetComponent<Trigger*>(entity) = new DestroyTrigger();
+		ECS::GetComponent<Sprite>(entity).SetTransparency(0.f);
 		
 		ECS::GetComponent<Trigger*>(entity)->SetTriggerEntity(entity);
-		// This line affect the ball and making it disappear
-		ECS::GetComponent<Trigger*>(entity)->AddTargetEntity(ball);
-		// ECS::GetComponent<Trigger*>(entity)->AddTargetEntity(wall);
+		
+		ECS::GetComponent<Trigger*>(entity)->AddTargetEntity(wall);
 
 		auto& tempSpr = ECS::GetComponent<Sprite>(entity);
 		auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
@@ -185,30 +245,37 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		b2Body* tempBody;
 		b2BodyDef tempDef;
 		tempDef.type = b2_staticBody;
-		tempDef.position.Set(float32(800.f), float32(-80.f));
+		tempDef.position.Set(float32(730.f), float32(-80.f));
 
 		tempBody = m_physicsWorld->CreateBody(&tempDef);
 
-		tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth() - shrinkX), float(tempSpr.GetHeight() - shrinkY), vec2(0.f, 0.f), true, TRIGGER, OBJECTS);
+		tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth() - shrinkX), float(tempSpr.GetHeight() - shrinkY), vec2(0.f, 0.f), true, TRIGGER, OBJECTS, PLAYER);
 		tempPhsBody.SetColor(vec4(1.f, 0.f, 0.f, 0.3f));
 	}
-	
 
-	// Test Polygon
-
+	// Drop Ailens trigger
 	{
 		//Creates entity
 		auto entity = ECS::CreateEntity();
+		trigger = entity;
 
 		//Add components
 		ECS::AttachComponent<Sprite>(entity);
 		ECS::AttachComponent<Transform>(entity);
 		ECS::AttachComponent<PhysicsBody>(entity);
+		ECS::AttachComponent<Trigger*>(entity);
 
 		//Sets up components
-		std::string fileName = "BulletMask.jpg";
-		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 50, 39);
-		ECS::GetComponent<Transform>(entity).SetPosition(vec3(780, 125, 2.f));
+		std::string fileName = "boxSprite.jpg";
+		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 20, 100);
+		ECS::GetComponent<Transform>(entity).SetPosition(vec3(1200, 0.f, 80.f));
+		ECS::GetComponent<Trigger*>(entity) = new DestroyTrigger();
+		ECS::GetComponent<Sprite>(entity).SetTransparency(1.f);
+
+		ECS::GetComponent<Trigger*>(entity)->SetTriggerEntity(entity);
+
+		ECS::GetComponent<Trigger*>(entity)->AddTargetEntity(wall);
+		ECS::GetComponent<Trigger*>(entity)->AddTargetEntity(trigger);
 
 		auto& tempSpr = ECS::GetComponent<Sprite>(entity);
 		auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
@@ -217,17 +284,15 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		float shrinkY = 0.f;
 		b2Body* tempBody;
 		b2BodyDef tempDef;
-		tempDef.type = b2_dynamicBody;
-		tempDef.position.Set(float32(780), float32(125));
+		tempDef.type = b2_staticBody;
+		tempDef.position.Set(float32(1200.f), float32(0.f));
 
 		tempBody = m_physicsWorld->CreateBody(&tempDef);
 
-		tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth() - shrinkX),
-			float(tempSpr.GetHeight() - shrinkY), vec2(0.f, 0.f), false, GROUND, PLAYER | ENEMY | OBJECTS, 1.f, 1.f);
-		tempPhsBody.SetColor(vec4(0.f, 1.f, 0.f, 0.3f));
-		tempPhsBody.SetRotationAngleDeg(0);
+		tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth() - shrinkX), float(tempSpr.GetHeight() - shrinkY), vec2(0.f, 0.f), true, TRIGGER, PLAYER);
+		tempPhsBody.SetColor(vec4(1.f, 0.f, 0.f, 0.3f));
 	}
-
+	
 	ECS::GetComponent<HorizontalScroll>(MainEntities::MainCamera()).SetFocus(&ECS::GetComponent<Transform>(MainEntities::MainPlayer()));
 	ECS::GetComponent<VerticalScroll>(MainEntities::MainCamera()).SetFocus(&ECS::GetComponent<Transform>(MainEntities::MainPlayer()));
 
@@ -261,6 +326,7 @@ void PhysicsPlayground::makeBox(int xSize, int ySize, float xPos, float yPos, fl
 	}
 	else {
 		tempDef.type = b2_dynamicBody;
+		block = entity;
 	}
 	tempDef.position.Set(float32(xPos), float32(yPos));
 
@@ -303,12 +369,46 @@ void PhysicsPlayground::makeBall(int xSize, int ySize, float xPos, float yPos)
 	tempBody = m_physicsWorld->CreateBody(&tempDef);
 
 	//tempPhsBody = PhysicsBody(tempBody, float(tempSpr.GetWidth() - shrinkX), float(tempSpr.GetHeight() - shrinkY), vec2(0.f, 0.f), false);
-	tempPhsBody = PhysicsBody(entity, tempBody, float((tempSpr.GetWidth() - shrinkY) / 2.f), vec2(0.f, 0.f), false, OBJECTS, GROUND | ENVIRONMENT | PLAYER | TRIGGER, 0.5f, 10.f);
+	tempPhsBody = PhysicsBody(entity, tempBody, float((tempSpr.GetWidth() - shrinkY) / 2.f), vec2(0.f, 0.f), false, OBJECTS, GROUND | ENVIRONMENT | PLAYER, 0.5f, 10.f);
 
 	//Custom body
 	// The program detects these points clockwise, so top of the triangle, bottom right, bottom left. box 2d is counter clockwise
 	// std::vector<b2Vec2> points = { b2Vec2(-tempSpr.GetWidth() / 2, -tempSpr.GetHeight() / 2.f), b2Vec2(tempSpr.GetWidth() / 2.f,-tempSpr.GetHeight() / 2), b2Vec2(0.f,tempSpr.GetHeight() / 2.f) }; 
 	// tempPhsBody = PhysicsBody(entity, BodyType::TRIANGLE, tempBody, points, vec2(0.f, 0.f), false, PLAYER, ENEMY | OBJECTS | PICKUP | TRIGGER, 0.5f, 3.f);
+
+	tempPhsBody.SetColor(vec4(1.f, 0.f, 1.f, 0.3f));
+}
+
+void PhysicsPlayground::makeTriangle(int xSize, int ySize, float xPos, float yPos) {
+	auto entity = ECS::CreateEntity();
+
+	//Add components
+	ECS::AttachComponent<Sprite>(entity);
+	ECS::AttachComponent<Transform>(entity);
+	ECS::AttachComponent<PhysicsBody>(entity);
+
+	//Sets up the components
+	std::string fileName = "triangle-alien.png";
+	ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, xSize, ySize);
+	ECS::GetComponent<Sprite>(entity).SetTransparency(1.f);
+	ECS::GetComponent<Transform>(entity).SetPosition(vec3(45.f, -8.f, 3.f));
+
+	auto& tempSpr = ECS::GetComponent<Sprite>(entity);
+	auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
+
+	float shrinkX = 0.f;
+	float shrinkY = 0.f;
+
+	b2Body* tempBody;
+	b2BodyDef tempDef;
+	tempDef.type = b2_dynamicBody;
+	tempDef.position.Set(float32(xPos), float32(yPos));
+
+	tempBody = m_physicsWorld->CreateBody(&tempDef);
+
+	// The program detects these points clockwise, so top of the triangle, bottom right, bottom left. box 2d is counter clockwise
+	std::vector<b2Vec2> points = { b2Vec2(-tempSpr.GetWidth() / 2, -tempSpr.GetHeight() / 2.f), b2Vec2(tempSpr.GetWidth() / 2.f,-tempSpr.GetHeight() / 2), b2Vec2(0.f,tempSpr.GetHeight() / 2.f) }; 
+	tempPhsBody = PhysicsBody(entity, BodyType::TRIANGLE, tempBody, points, vec2(0.f, 0.f), false, GROUND, PLAYER | ENEMY | OBJECTS, 0.5f, 3.f);
 
 	tempPhsBody.SetColor(vec4(1.f, 0.f, 1.f, 0.3f));
 }

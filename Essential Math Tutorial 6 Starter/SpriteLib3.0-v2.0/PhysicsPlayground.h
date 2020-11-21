@@ -14,6 +14,7 @@ public:
 
 	void makeBox(int xSize, int ySize, float xPos, float yPos, float moveable, float rotation);
 	void makeBall(int xSize, int ySize, float xPos, float yPos);
+	void makeTriangle(int xSize, int ySize, float xPos, float yPos);
 	//Input overrides
 	void KeyboardHold() override;
 	void KeyboardDown() override;
@@ -21,6 +22,8 @@ public:
 
 protected:
 	PhysicsPlaygroundListener listener;
-
+	int trigger = 0;
 	int ball = 0;
+	int wall = 0;
+	int block = 0;
 };
