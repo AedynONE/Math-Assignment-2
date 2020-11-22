@@ -97,7 +97,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		b2Body* tempBody;
 		b2BodyDef tempDef;
 		tempDef.type = b2_dynamicBody;
-		tempDef.position.Set(float32(1500.f), float32(30.f));
+		tempDef.position.Set(float32(0), float32(30.f));
 
 		tempBody = m_physicsWorld->CreateBody(&tempDef);
 
@@ -146,6 +146,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 	}
 
 	// End gate
+
 	{
 		//Creates entity
 		auto entity = ECS::CreateEntity();
@@ -221,7 +222,6 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 
 	// Making a ball
 	PhysicsPlayground::makeBall(32, 32, 20, -8);
-	PhysicsPlayground::makeBall(32, 32, 1550, 75);
 
 	// Making Triangles
 	PhysicsPlayground::makeTriangle(30, 30, 1240, 200);
