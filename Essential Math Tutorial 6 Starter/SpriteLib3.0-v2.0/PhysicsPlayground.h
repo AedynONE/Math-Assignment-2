@@ -24,4 +24,5 @@ protected:
 	PhysicsPlaygroundListener listener;
 	int wall = 0;
 	int endWall = 1;
+	int dontDelete = 2;
 };
