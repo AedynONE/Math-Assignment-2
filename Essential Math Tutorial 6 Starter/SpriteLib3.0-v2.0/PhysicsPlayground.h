@@ -25,4 +25,5 @@ protected:
 	int wall = 0;
 	int secondWall = 1;
 	int expanableRamp = 2;
+	int endGate = 3; 
 };
