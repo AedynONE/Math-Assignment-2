@@ -52,7 +52,6 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 	{
 		//Creates entity
 		auto entity = ECS::CreateEntity();
-		dontDelete = entity;
 
 		//Add components
 		ECS::AttachComponent<Sprite>(entity);
@@ -97,7 +96,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		b2Body* tempBody;
 		b2BodyDef tempDef;
 		tempDef.type = b2_dynamicBody;
-		tempDef.position.Set(float32(0), float32(30.f));
+		tempDef.position.Set(float32(1700), float32(30.f));
 
 		tempBody = m_physicsWorld->CreateBody(&tempDef);
 
@@ -145,12 +144,12 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		tempPhsBody.SetRotationAngleDeg(0);
 	}
 
-	// End gate
+	// second gate
 
 	{
 		//Creates entity
 		auto entity = ECS::CreateEntity();
-		endWall = entity;
+		secondWall = entity;
 
 		//Add components
 		ECS::AttachComponent<Sprite>(entity);
@@ -180,11 +179,47 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		tempPhsBody.SetRotationAngleDeg(0);
 	}
 
+	// Expanable Ramp
+
+	{
+		auto entity = ECS::CreateEntity();
+
+		//Add components
+		ECS::AttachComponent<Sprite>(entity);
+		ECS::AttachComponent<Transform>(entity);
+		ECS::AttachComponent<PhysicsBody>(entity);
+
+		//Sets up the components
+		std::string fileName = "Ramp.png";
+		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 20, 20);
+		ECS::GetComponent<Sprite>(entity).SetTransparency(1.f);
+		ECS::GetComponent<Transform>(entity).SetPosition(vec3(2030, 50.f, 3.f));
+
+		auto& tempSpr = ECS::GetComponent<Sprite>(entity);
+		auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
+
+		float shrinkX = 0.f;
+		float shrinkY = 0.f;
+
+		b2Body* tempBody;
+		b2BodyDef tempDef;
+		tempDef.type = b2_dynamicBody;
+		tempDef.position.Set(float32(2030), float32(50));
+
+		tempBody = m_physicsWorld->CreateBody(&tempDef);
+
+		// The program detects these points clockwise, so top of the triangle, bottom right, bottom left. box 2d is counter clockwise
+		std::vector<b2Vec2> points = { b2Vec2(-tempSpr.GetWidth() / 2, -tempSpr.GetHeight() / 2.f), b2Vec2(tempSpr.GetWidth() / 2.f,-tempSpr.GetHeight() / 2), b2Vec2(tempSpr.GetWidth() / 2.f,tempSpr.GetHeight() / 2.f) };
+		tempPhsBody = PhysicsBody(entity, BodyType::TRIANGLE, tempBody, points, vec2(0.f, 0.f), false, GROUND, PLAYER | ENEMY | OBJECTS, 0.5f, 3.f);
+
+		tempPhsBody.SetColor(vec4(1.f, 0.f, 1.f, 0.3f));
+	}
+
 	// Ceiling
 	PhysicsPlayground::makeBox(750, 10, 300, 50, false, 0);
 	PhysicsPlayground::makeBox(250, 10, 800, 150, false, 0);
 	PhysicsPlayground::makeBox(300, 10, 1070, 50, false, 0);
-	PhysicsPlayground::makeBox(1000, 10, 1750, 140, false, 0);
+	PhysicsPlayground::makeBox(500, 10, 1620, 140, false, 0);
 
 	// Floor
 	PhysicsPlayground::makeBox(350, 10, 100, -50, false, 0);
@@ -196,7 +231,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 	PhysicsPlayground::makeBox(300, 10, 1500, -40, false, 0);
 	PhysicsPlayground::makeBox(100, 10, 1600, 45, false, 0);
 	PhysicsPlayground::makeBox(50, 10, 1730, 45, false, 0);
-	PhysicsPlayground::makeBox(70, 10, 1675, 20, false, 0);
+	PhysicsPlayground::makeBox(70, 10, 1675, 45, false, 0);
 	PhysicsPlayground::makeBox(300, 10, 1900, 45, false, 0);
 
 	// Puzzle 2 barrier blocks
@@ -213,6 +248,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 	PhysicsPlayground::makeBox(10, 200, 1215, 150, false, 0);
 	PhysicsPlayground::makeBox(10, 200, 1365, 150, false, 0);
 	PhysicsPlayground::makeBox(10, 100, 1550, 0, false, 0);
+	PhysicsPlayground::makeBox(10, 100, 2045, 100, false, 0);
 
 	// Second layer
 	PhysicsPlayground::makeBox(200, 10, 350, -110, false, 0);
@@ -300,11 +336,11 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		//Sets up components
 		std::string fileName = "boxSprite.jpg";
 		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 50, 30);
-		ECS::GetComponent<Transform>(entity).SetPosition(vec3(1675, 70.f, 80.f));
+		ECS::GetComponent<Transform>(entity).SetPosition(vec3(1675, 75, 80.f));
 		ECS::GetComponent<Trigger*>(entity) = new DestroyTrigger();
 		ECS::GetComponent<Sprite>(entity).SetTransparency(0.f);
 		ECS::GetComponent<Trigger*>(entity)->SetTriggerEntity(entity);
-		ECS::GetComponent<Trigger*>(entity)->AddTargetEntity(endWall);
+		ECS::GetComponent<Trigger*>(entity)->AddTargetEntity(secondWall);
 
 		auto& tempSpr = ECS::GetComponent<Sprite>(entity);
 		auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
@@ -314,7 +350,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		b2Body* tempBody;
 		b2BodyDef tempDef;
 		tempDef.type = b2_staticBody;
-		tempDef.position.Set(float32(1675.f), float32(30.f));
+		tempDef.position.Set(float32(1675.f), float32(75));
 
 		tempBody = m_physicsWorld->CreateBody(&tempDef);
 
