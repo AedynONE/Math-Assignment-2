@@ -86,7 +86,7 @@ void Scene::AdjustScrollOffset()
 
 	float playerHalfSize = 0; //ECS::GetComponent<Sprite>(MainEntities::MainPlayer()).GetWidth() / 2.f;
 
-	ECS::GetComponent<HorizontalScroll>(MainEntities::MainCamera()).SetOffset((maxSizeX - playerHalfSize));
+	ECS::GetComponent<HorizontalScroll>(MainEntities::MainCamera()).SetOffset(maxSizeX - playerHalfSize); // "- playerHalfSize" is useless when it is equal to 0, so you can remove that if you want.
 		//std::cout << "\ncamera offset: " << ECS::GetComponent<HorizontalScroll>(MainEntities::MainCamera()).GetOffset();
 	ECS::GetComponent<VerticalScroll>(MainEntities::MainCamera()).SetOffset(maxSizeY - playerHalfSize);
 }

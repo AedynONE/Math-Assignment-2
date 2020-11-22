@@ -78,25 +78,25 @@ void Player::MovementUpdate()
 	//if (m_hasPhysics) {
 		if (Input::GetKey(Key::W))
 		{
-			std::cout << "\tW";
+			std::cout << "\rW";
 			m_facing = UP;
 			m_moving = true;
 		}
 		if (Input::GetKey(Key::S))
 		{
-			std::cout << "\tS";
+			std::cout << "\rS";
 			m_facing = DOWN;
 			m_moving = true;
 		}
 		if (Input::GetKey(Key::A))
 		{
-			std::cout << "\tA";
+			std::cout << "\rA";
 			m_facing = LEFT;
 			m_moving = true;
 		}
 		if (Input::GetKey(Key::D))
 		{
-			std::cout << "\tD";
+			std::cout << "\rD";
 			m_facing = RIGHT;
 			m_moving = true;
 		}

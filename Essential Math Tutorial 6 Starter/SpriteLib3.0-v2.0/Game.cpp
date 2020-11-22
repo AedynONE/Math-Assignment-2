@@ -1,5 +1,5 @@
 #include "Game.h"
-
+#include "Scene.h"
 #include <random>
 
 
@@ -242,7 +242,7 @@ void Game::MouseMotion(SDL_MouseMotionEvent evnt)
 	//Active scene now captures this input and can use it
 	//Look at base Scene class for more info.
 	m_activeScene->MouseMotion(evnt);
-
+	
 	if (m_guiActive)
 	{
 		ImGui::GetIO().MousePos = ImVec2(float(evnt.x), float(evnt.y));
@@ -262,7 +262,7 @@ void Game::MouseClick(SDL_MouseButtonEvent evnt)
 	//Active scene now captures this input and can use it
 	//Look at base Scene class for more info.
 	m_activeScene->MouseClick(evnt);
-
+	//std::cout << evnt.x << ", " << evnt.y << '\n';
 	if (m_guiActive)
 	{
 		ImGui::GetIO().MousePos = ImVec2(float(evnt.x), float(evnt.y));
@@ -271,6 +271,27 @@ void Game::MouseClick(SDL_MouseButtonEvent evnt)
 		ImGui::GetIO().MouseDown[2] = (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_MIDDLE));
 	}
 
+	//if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+	//	int winHeight = BackEnd::GetWindowHeight();
+	//	int winWidth = BackEnd::GetWindowWidth();
+
+	//	vec4 ortho = m_sceneReg->get<Camera>(MainEntities::MainCamera()).GetOrthoSize();
+	//	vec2 pos = vec2(
+	//		((evnt.x / static_cast<float>(winHeight) * 2.f * ortho.w) - (ortho.w * static_cast<float>(winWidth) / static_cast<float>(winHeight))), 
+	//		((-evnt.y / static_cast<float>(winHeight) * 2.f * ortho.w) + ortho.w)
+	//	);
+	//	pos = pos + vec2(m_sceneReg->get<Camera>(MainEntities::MainCamera()).GetPositionX(), m_sceneReg->get<Camera>(MainEntities::MainCamera()).GetPositionY());
+	//	//std::cout << pos;
+
+	//	//vec4 ortho = m_sceneReg->get<Camera>(MainEntities::MainCamera()).GetOrthoSize();
+	//	//int posX = ((evnt.x / static_cast<float>(winHeight) * 2.f * ortho.w) - (ortho.w * static_cast<float>(winWidth) / static_cast<float>(winHeight)));
+	//	//int posY = ((-evnt.y / static_cast<float>(winHeight) * 2.f * ortho.w) + ortho.w);
+	//	//
+	//	//posX += m_sceneReg->get<Camera>(MainEntities::MainCamera()).GetPositionX();
+	//	//posY +=	m_sceneReg->get<Camera>(MainEntities::MainCamera()).GetPositionY();
+	//	//std::cout << "\r" << posX << ", " << posY << "\n";
+
+	//}
 	//Resets the enabled flag
 	m_click = false;
 }

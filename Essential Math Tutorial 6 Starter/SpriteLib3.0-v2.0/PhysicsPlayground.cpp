@@ -328,7 +328,7 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 	//ECS::GetComponent<Player>(MainEntities::MainPlayer()).SetSprite(&ECS::GetComponent<Sprite>(MainEntities::MainPlayer()));
 }
 
-void PhysicsPlayground::makeBox(int xSize, int ySize, float xPos, float yPos, float moveable, float rotation)
+void PhysicsPlayground::makeBox(int xSize, int ySize, float xPos, float yPos, bool moveable, float rotation)
 {
 	//Creates entity
 	auto entity = ECS::CreateEntity();
@@ -338,8 +338,19 @@ void PhysicsPlayground::makeBox(int xSize, int ySize, float xPos, float yPos, fl
 	ECS::AttachComponent<Transform>(entity);
 	ECS::AttachComponent<PhysicsBody>(entity);
 
+	std::string fileName;
+	
 	//Sets up components
-	std::string fileName = "boxSprite.jpg";
+	b2Body* tempBody;
+	b2BodyDef tempDef;
+	if (moveable == false) {
+		fileName = "boxSprite.jpg";
+		tempDef.type = b2_staticBody;
+	}
+	else {
+		fileName = "Masks/SquareMask.png";
+		tempDef.type = b2_dynamicBody;
+	}
 	ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, xSize, ySize);
 	ECS::GetComponent<Transform>(entity).SetPosition(vec3(xPos, yPos, 2.f));
 
@@ -348,14 +359,6 @@ void PhysicsPlayground::makeBox(int xSize, int ySize, float xPos, float yPos, fl
 
 	float shrinkX = 0.f;
 	float shrinkY = 0.f;
-	b2Body* tempBody;
-	b2BodyDef tempDef;
-	if (moveable == false) {
-		tempDef.type = b2_staticBody;
-	}
-	else {
-		tempDef.type = b2_dynamicBody;
-	}
 	tempDef.position.Set(float32(xPos), float32(yPos));
 
 	tempBody = m_physicsWorld->CreateBody(&tempDef);
@@ -453,7 +456,7 @@ void PhysicsPlayground::KeyboardHold()
 	auto& player = ECS::GetComponent<PhysicsBody>(MainEntities::MainPlayer());
 	float speed = 75.f;
 	b2Vec2 vel = b2Vec2(0.f, 0.f);
-	std::cout << "\n" << player.GetBody()->GetLinearVelocity().x << ",\t" << player.GetBody()->GetLinearVelocity().y << "\t";
+	//std::cout << "\n" << player.GetBody()->GetLinearVelocity().x << ",\t" << player.GetBody()->GetLinearVelocity().y << "\t";
 	if (Input::GetKey(Key::Shift))
 	{
 		speed *= 2.f;
