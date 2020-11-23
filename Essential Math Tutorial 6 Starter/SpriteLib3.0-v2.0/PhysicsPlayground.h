@@ -25,6 +25,7 @@ public:
 protected:
 	PhysicsPlaygroundListener listener;
 	int wall = 0;
-	int endWall = 1;
-	int dontDelete = 2;
+	int secondWall = 1;
+	int expanableRamp = 2;
+	int endGate = 3; 
 };
