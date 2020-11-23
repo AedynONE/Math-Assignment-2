@@ -15,6 +15,8 @@ public:
 	void makeBox(int xSize, int ySize, float xPos, float yPos, bool moveable, float rotation);
 	void makeBall(int xSize, int ySize, float xPos, float yPos);
 	void makeTriangle(int xSize, int ySize, float xPos, float yPos);
+	void makeRightTriangle(int xSize, int ySize, float xPos, float yPos, bool moveable = false, float rotation = 0);
+	void makePoly(int xSize, int ySize, float xPos, float yPos, bool moveable = false, float rotation = 0);
 	//Input overrides
 	void KeyboardHold() override;
 	void KeyboardDown() override;

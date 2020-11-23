@@ -13,6 +13,7 @@ enum class BodyType
 	BOX,
 	CIRCLE,
 	TRIANGLE,
+	RIGHTTRIANGLE,
 	// Add new body type here
 	NUM_TYPES
 };

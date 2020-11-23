@@ -27,6 +27,7 @@ void PhysicsSystem::Init()
 	m_bodyTypeMasks.push_back("SquareMask.png");
 	m_bodyTypeMasks.push_back("CircleMask.png");
 	m_bodyTypeMasks.push_back("TriangleMask.png");
+	m_bodyTypeMasks.push_back("RightTriangleMask.png");
 }
 
 void PhysicsSystem::InitDebugDrawPlaneVAO()
