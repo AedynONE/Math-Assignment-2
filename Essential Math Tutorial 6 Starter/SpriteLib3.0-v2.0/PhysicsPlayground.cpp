@@ -100,7 +100,21 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		tempBody = m_physicsWorld->CreateBody(&tempDef);
 
 		//Square body
-		tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth() - shrinkX), float(tempSpr.GetHeight() - shrinkY), vec2(0.f, 0.f), false, PLAYER, ENEMY | OBJECTS | PICKUP | TRIGGER, 0.5f, 20.f);
+		//tempPhsBody = PhysicsBody(entity, tempBody, float(tempSpr.GetWidth() - shrinkX), float(tempSpr.GetHeight() - shrinkY), vec2(0.f, 0.f), false, PLAYER, ENEMY | OBJECTS | PICKUP | TRIGGER, 0.15f, 20.f);
+
+		float Height = tempSpr.GetHeight() - shrinkY;
+		float Width = tempSpr.GetWidth() - shrinkX;
+		std::vector<b2Vec2> points = {
+			b2Vec2(Width / 3.f, -Height / 2.f),
+			b2Vec2(Width / 2.f, -Height / 3.f),
+			b2Vec2(Width / 2.f, Height / 3.f),
+			b2Vec2(Width / 3.f, Height / 2.f),
+			b2Vec2(-Width / 3.f, Height / 2.f),
+			b2Vec2(-Width / 2.f, Height / 3.f),
+			b2Vec2(-Width / 2.f, -Height / 3.f),
+			b2Vec2(-Width / 3.f, -Height / 2.f)
+		};
+		tempPhsBody = PhysicsBody(entity, BodyType::OCTAGON, tempBody, points, vec2(0.f, 0.f), false, PLAYER, ENEMY | OBJECTS | PICKUP | TRIGGER, 0.1f, 20.f);
 
 		tempPhsBody.SetRotationAngleDeg(0.f);
 		tempPhsBody.SetFixedRotation(true);
@@ -187,10 +201,10 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 		ECS::AttachComponent<PhysicsBody>(entity);
 
 		//Sets up the components
-		std::string fileName = "Ramp.png";
-		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 20, 20);
+		std::string fileName = "RightTriangle.png";
+		ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 100, 100);
 		ECS::GetComponent<Sprite>(entity).SetTransparency(1.f);
-		ECS::GetComponent<Transform>(entity).SetPosition(vec3(2030, 50.f, 3.f));
+		ECS::GetComponent<Transform>(entity).SetPosition(vec3(1990, 100.f, 3.f));
 
 		auto& tempSpr = ECS::GetComponent<Sprite>(entity);
 		auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
@@ -200,14 +214,14 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 
 		b2Body* tempBody;
 		b2BodyDef tempDef;
-		tempDef.type = b2_dynamicBody;
-		tempDef.position.Set(float32(2030), float32(50));
+		tempDef.type = b2_staticBody;
+		tempDef.position.Set(float32(1990), float32(100));
 
 		tempBody = m_physicsWorld->CreateBody(&tempDef);
 
 		// The program detects these points clockwise, so top of the triangle, bottom right, bottom left. box 2d is counter clockwise
-		std::vector<b2Vec2> points = { b2Vec2(-tempSpr.GetWidth() / 2, -tempSpr.GetHeight() / 2.f), b2Vec2(tempSpr.GetWidth() / 2.f,-tempSpr.GetHeight() / 2), b2Vec2(tempSpr.GetWidth() / 2.f,tempSpr.GetHeight() / 2.f) };
-		tempPhsBody = PhysicsBody(entity, BodyType::TRIANGLE, tempBody, points, vec2(0.f, 0.f), false, GROUND, PLAYER | ENEMY | OBJECTS, 0.5f, 3.f);
+		std::vector<b2Vec2> points = { b2Vec2(-tempSpr.GetWidth() / 2, -tempSpr.GetHeight() / 2.f), b2Vec2(tempSpr.GetWidth() / 2.f,-tempSpr.GetHeight() / 2), b2Vec2(tempSpr.GetWidth() / 2.f, tempSpr.GetHeight() / 2.f) };
+		tempPhsBody = PhysicsBody(entity, BodyType::RIGHTTRIANGLE, tempBody, points, vec2(0.f, 0.f), false, PLAYER, ENEMY | OBJECTS | PICKUP | TRIGGER, 0.5f, 3.f);
 
 		tempPhsBody.SetColor(vec4(1.f, 0.f, 1.f, 0.3f));
 	}
@@ -465,11 +479,12 @@ void PhysicsPlayground::InitScene(float windowWidth, float windowHeight)
 	PhysicsPlayground::makeTriangle(30, 30, 1240, 200);
 
 	//		Moveable box
-	PhysicsPlayground::makeBox(60, 60, 80, -8, true, 0);
+	//PhysicsPlayground::makeBox(60, 60, 80, -8, true, 0);
 	PhysicsPlayground::makeBox(20, 39, 800, 130, true, 0);
 	PhysicsPlayground::makeBox(59, 39, 850, 130, true, 0);
 
-	PhysicsPlayground::makeRightTriangle(20, 20, 1860, 155, false, 0);
+	//PhysicsPlayground::makeRightTriangle(20, 20, 2030, 50, false, 0);
+	PhysicsPlayground::makePoly(60, 60, 80, -8, true, 0);
 
 	ECS::GetComponent<HorizontalScroll>(MainEntities::MainCamera()).SetFocus(&ECS::GetComponent<Transform>(MainEntities::MainPlayer()));
 	ECS::GetComponent<VerticalScroll>(MainEntities::MainCamera()).SetFocus(&ECS::GetComponent<Transform>(MainEntities::MainPlayer()));
@@ -592,52 +607,54 @@ void PhysicsPlayground::makeTriangle(int xSize, int ySize, float xPos, float yPo
 	tempPhsBody.SetColor(vec4(1.f, 0.f, 1.f, 0.3f));
 }
 
-void PhysicsPlayground::makeRightTriangle(int xSize, int ySize, float xPos, float yPos, bool moveable, float rotation)
-{
-	auto entity = ECS::CreateEntity();
-
-	//Add components
-	ECS::AttachComponent<Sprite>(entity);
-	ECS::AttachComponent<Transform>(entity);
-	ECS::AttachComponent<PhysicsBody>(entity);
-
-	std::string fileName;
-
-	//Sets up components
-	b2Body* tempBody;												
-	b2BodyDef tempDef;
-
-	if (moveable) {
-		fileName = "Masks/RightTriangleMask2.png";
-		tempDef.type = b2_dynamicBody;
-	}
-	else {
-		fileName = "RightTriangle.png";
-		tempDef.type = b2_staticBody;
-	}
-	ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, xSize, ySize);
-	ECS::GetComponent<Transform>(entity).SetPosition(vec3(xPos, yPos, 2.f));
-
-	auto& tempSpr = ECS::GetComponent<Sprite>(entity);
-	auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
-
-	float shrinkX = 0.f;
-	float shrinkY = 0.f;
-	tempDef.position.Set(float32(xPos), float32(yPos));
-
-	tempBody = m_physicsWorld->CreateBody(&tempDef);
-
-	//tempPhsBody = PhysicsBody(tempBody, float(tempSpr.GetWidth() - shrinkX), float(tempSpr.GetHeight() - shrinkY), vec2(0.f, 0.f), false);
-	//tempPhsBody = PhysicsBody(entity, tempBody, float((tempSpr.GetWidth() - shrinkY) / 2.f), vec2(0.f, 0.f), false, OBJECTS, GROUND | ENVIRONMENT | PLAYER | TRIGGER, 0.5f, 10.f);
-
-	//Custom body
-	// The program detects these points clockwise, so top of the triangle, bottom right, bottom left. box 2d is counter clockwise
-	std::vector<b2Vec2> points = { b2Vec2(-tempSpr.GetWidth() / 2, -tempSpr.GetHeight() / 2.f), b2Vec2(tempSpr.GetWidth() / 2.f,-tempSpr.GetHeight() / 2), b2Vec2(tempSpr.GetWidth() / 2.f, tempSpr.GetHeight() / 2.f) };
-	tempPhsBody = PhysicsBody(entity, BodyType::RIGHTTRIANGLE, tempBody, points, vec2(0.f, 0.f), false, PLAYER, ENEMY | OBJECTS | PICKUP | TRIGGER, 0.5f, 3.f);
-
-	tempPhsBody.SetColor(vec4(1.f, 0.f, 1.f, 0.3f));
-	tempPhsBody.SetRotationAngleDeg(rotation);
-}
+//void PhysicsPlayground::makeRightTriangle(int xSize, int ySize, float xPos, float yPos, bool moveable, float rotation)
+//{
+//	auto 
+//	entity = ECS::CreateEntity();
+//
+//
+//	//Add components
+//	ECS::AttachComponent<Sprite>(entity);
+//	ECS::AttachComponent<Transform>(entity);
+//	ECS::AttachComponent<PhysicsBody>(entity);
+//
+//	std::string fileName;
+//
+//	//Sets up components
+//	b2Body* tempBody;												
+//	b2BodyDef tempDef;
+//
+//	//if (moveable) {
+//		//fileName = "Masks/RightTriangleMask2.png";
+//		//tempDef.type = b2_dynamicBody;
+//	//}
+//	//else {
+//		fileName = "RightTriangle.png";
+//		tempDef.type = b2_staticBody;
+//	//}
+//	//ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, xSize, ySize);
+//	ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, 20, 20);
+//	//ECS::GetComponent<Transform>(entity).SetPosition(vec3(xPos, yPos, 3.f));
+//	ECS::GetComponent<Transform>(entity).SetPosition(vec3(2030, 50, 3.f));
+//
+//	auto& tempSpr = ECS::GetComponent<Sprite>(entity);
+//	auto& tempPhsBody = ECS::GetComponent<PhysicsBody>(entity);
+//
+//	float shrinkX = 0.f;
+//	float shrinkY = 0.f;
+//	//tempDef.position.Set(float32(xPos), float32(yPos));
+//	tempDef.position.Set(float32(2030), float32(50));
+//
+//	tempBody = m_physicsWorld->CreateBody(&tempDef);
+//
+//	//Custom body
+//	// The program detects these points clockwise, so top of the triangle, bottom right, bottom left. box 2d is counter clockwise
+//	std::vector<b2Vec2> points = { b2Vec2(-tempSpr.GetWidth() / 2, -tempSpr.GetHeight() / 2.f), b2Vec2(tempSpr.GetWidth() / 2.f,-tempSpr.GetHeight() / 2), b2Vec2(tempSpr.GetWidth() / 2.f, tempSpr.GetHeight() / 2.f) };
+//	tempPhsBody = PhysicsBody(entity, BodyType::RIGHTTRIANGLE, tempBody, points, vec2(0.f, 0.f), false, PLAYER, ENEMY | OBJECTS | PICKUP | TRIGGER, 0.5f, 3.f);
+//
+//	tempPhsBody.SetColor(vec4(1.f, 0.f, 1.f, 0.3f));
+//	//tempPhsBody.SetRotationAngleDeg(rotation);
+//}
 
 void PhysicsPlayground::makePoly(int xSize, int ySize, float xPos, float yPos, bool moveable, float rotation)
 {
@@ -654,14 +671,13 @@ void PhysicsPlayground::makePoly(int xSize, int ySize, float xPos, float yPos, b
 	b2Body* tempBody;
 	b2BodyDef tempDef;
 
-	if (moveable) {
-		fileName = "Masks/RightTriangleMask.png";
-		tempDef.type = b2_staticBody;
-	}
-	else {
-		fileName = "Masks/RightTriangleMask.png";
+		fileName = "Masks/OctagonMask.png";
+	//if (moveable) {
+	//	tempDef.type = b2_staticBody;
+	//}
+	//if (moveable) {
 		tempDef.type = b2_dynamicBody;
-	}
+	//}
 	ECS::GetComponent<Sprite>(entity).LoadSprite(fileName, xSize, ySize);
 	ECS::GetComponent<Transform>(entity).SetPosition(vec3(xPos, yPos, 2.f));
 
@@ -679,10 +695,21 @@ void PhysicsPlayground::makePoly(int xSize, int ySize, float xPos, float yPos, b
 
 	//Custom body
 	// The program detects these points clockwise, so top of the triangle, bottom right, bottom left. box 2d is counter clockwise
-	std::vector<b2Vec2> points = { b2Vec2(-tempSpr.GetWidth() / 2, -tempSpr.GetHeight() / 2.f), b2Vec2(tempSpr.GetWidth() / 2.f,-tempSpr.GetHeight() / 2), b2Vec2(tempSpr.GetWidth() / 2.f, tempSpr.GetHeight() / 2.f) };
-	tempPhsBody = PhysicsBody(entity, BodyType::RIGHTTRIANGLE, tempBody, points, vec2(0.f, 0.f), false, PLAYER, ENEMY | OBJECTS | PICKUP | TRIGGER, 0.5f, 3.f);
+	float Height = tempSpr.GetHeight();
+	float Width = tempSpr.GetWidth();
+	std::vector<b2Vec2> points = { 
+		b2Vec2(Width / 5.f, -Height / 2.f), 
+		b2Vec2(Width / 2.f, -Height / 5.f), 
+		b2Vec2(Width / 2.f, Height / 5.f), 
+		b2Vec2(Width / 5.f, Height / 2.f), 
+		b2Vec2(-Width / 5.f, Height / 2.f), 
+		b2Vec2(-Width / 2.f, Height / 5.f), 
+		b2Vec2(-Width / 2.f, -Height / 5.f), 
+		b2Vec2(-Width / 5.f, -Height / 2.f) 
+	};
+	tempPhsBody = PhysicsBody(entity, BodyType::OCTAGON, tempBody, points, vec2(0.f, 0.f), false, OBJECTS, ENEMY | OBJECTS | PICKUP | TRIGGER, 0.5f, 3.f);
 
-	tempPhsBody.SetColor(vec4(1.f, 0.f, 1.f, 0.3f));
+	tempPhsBody.SetColor(vec4(0.5f, 0.f, 1.f, 0.3f));
 	tempPhsBody.SetRotationAngleDeg(rotation);
 }
 

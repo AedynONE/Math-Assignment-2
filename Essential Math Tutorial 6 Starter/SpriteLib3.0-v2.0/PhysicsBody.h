@@ -14,6 +14,7 @@ enum class BodyType
 	CIRCLE,
 	TRIANGLE,
 	RIGHTTRIANGLE,
+	OCTAGON,
 	// Add new body type here
 	NUM_TYPES
 };
